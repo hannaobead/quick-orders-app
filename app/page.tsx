@@ -55,7 +55,8 @@ export default function OrdersPage() {
       const data = await fetchOrders(t);
       setOrders(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בטעינה');
+      const msg = err instanceof Error ? err.message : 'שגיאה בטעינה';
+      setError(`${msg} (token: ${t ? t.slice(0, 10) + '...' : 'none'})`);
     } finally {
       setLoading(false);
     }

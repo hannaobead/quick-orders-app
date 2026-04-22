@@ -1,4 +1,5 @@
-const API_BASE = process.env.NEXT_PUBLIC_MAIN_API_URL ?? 'https://momentoprint.app';
+// Hardcoded — this app only ever talks to the main Momento API
+const API_BASE = 'https://momentoprint.app';
 
 async function apiFetch(path: string, token: string, options: RequestInit = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
