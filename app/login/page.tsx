@@ -16,7 +16,7 @@ export default function LoginPage() {
     setError(null);
     startTransition(async () => {
       try {
-        await signIn(email, password);
+        await signIn(email.trim(), password);
         router.push('/');
         router.refresh();
       } catch (err) {
@@ -31,7 +31,7 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold text-gray-800 mb-1 text-center">כניסה</h1>
         <p className="text-sm text-gray-500 text-center mb-6">הזמנות מהירות — Momento</p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" dir="rtl">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">מייל</label>
             <input
@@ -61,7 +61,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-center">
               {error}
             </p>
           )}
