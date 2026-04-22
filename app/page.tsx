@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSession, signOut } from '@/lib/auth';
+import { getBrowserClient } from '@/lib/supabase';
 import { fetchOrders, updateOrderStatus, type ManualOrder } from '@/lib/orders';
 
 const STATUSES = ['חדש', 'בטיפול', 'ממתין ללקוח', 'מוכן', 'נמסר', 'בוטל'];
@@ -34,10 +35,17 @@ export default function OrdersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    getSession().then((session) => {
+    const supabase = getBrowserClient();
+    // onAuthStateChange is the most reliable way to get session on mobile
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) { router.push('/login'); return; }
       setToken(session.access_token);
     });
+    // Also trigger an immediate check
+    void getSession().then((session) => {
+      if (!session) router.push('/login');
+    });
+    return () => subscription.unsubscribe();
   }, [router]);
 
   const load = useCallback(async (t: string) => {
