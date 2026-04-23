@@ -1,4 +1,5 @@
-const API_BASE = process.env.NEXT_PUBLIC_MAIN_API_URL ?? 'https://momentoprint.app';
+// Use same-origin proxy to avoid CORS issues
+const API_BASE = '';
 
 async function apiFetch(path: string, token: string, options: RequestInit = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -29,21 +30,21 @@ export type ManualOrder = {
 };
 
 export async function fetchOrders(token: string): Promise<ManualOrder[]> {
-  const data = await apiFetch('/api/quick-orders', token);
+  const data = await apiFetch('/api/orders', token);
   return data.orders ?? [];
 }
 
 export async function createOrder(token: string, body: Omit<ManualOrder, 'id' | 'priority_rank' | 'created_at'>): Promise<ManualOrder> {
-  const data = await apiFetch('/api/quick-orders', token, { method: 'POST', body: JSON.stringify(body) });
+  const data = await apiFetch('/api/orders', token, { method: 'POST', body: JSON.stringify(body) });
   return data.order;
 }
 
 export async function updateOrderStatus(token: string, id: string, status: string): Promise<ManualOrder> {
-  const data = await apiFetch('/api/quick-orders', token, { method: 'PATCH', body: JSON.stringify({ id, status }) });
+  const data = await apiFetch('/api/orders', token, { method: 'PATCH', body: JSON.stringify({ id, status }) });
   return data.order;
 }
 
 export async function updateOrder(token: string, order: ManualOrder): Promise<ManualOrder> {
-  const data = await apiFetch('/api/quick-orders', token, { method: 'PUT', body: JSON.stringify(order) });
+  const data = await apiFetch('/api/orders', token, { method: 'PUT', body: JSON.stringify(order) });
   return data.order;
 }
