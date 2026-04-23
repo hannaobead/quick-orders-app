@@ -31,7 +31,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<ManualOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('חדש');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -108,12 +108,6 @@ export default function OrdersPage() {
 
       <main className="max-w-3xl mx-auto px-4 py-6">
         <div className="flex gap-2 mb-5 flex-wrap">
-          <button
-            onClick={() => setStatusFilter('')}
-            className={`text-xs px-3 py-1.5 rounded-full border transition ${!statusFilter ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500'}`}
-          >
-            הכל ({orders.length})
-          </button>
           {STATUSES.map((s) => {
             const count = orders.filter((o) => o.status === s).length;
             if (!count) return null;
