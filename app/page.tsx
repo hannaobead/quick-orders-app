@@ -36,27 +36,37 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const supabase = getBrowserClient();
-    // onAuthStateChange is the most reliable way to get session on mobile
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+
+    // Start loading orders immediately from local session (fast path)
+    void getSession().then((session) => {
       if (!session) { router.push('/login'); return; }
       setToken(session.access_token);
     });
-    // Also trigger an immediate check
-    void getSession().then((session) => {
-      if (!session) router.push('/login');
+
+    // onAuthStateChange handles token refresh / logout on mobile
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) { router.push('/login'); return; }
+      setToken((prev) => prev === session.access_token ? prev : session.access_token);
     });
+
     return () => subscription.unsubscribe();
   }, [router]);
 
   const load = useCallback(async (t: string) => {
-    setLoading(true);
+    // Show cached orders instantly while fetching fresh data
+    const cached = sessionStorage.getItem('orders_cache');
+    if (cached) {
+      try { setOrders(JSON.parse(cached)); setLoading(false); } catch {}
+    }
+
     setError(null);
     try {
       const data = await fetchOrders(t);
       setOrders(data);
+      sessionStorage.setItem('orders_cache', JSON.stringify(data));
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'שגיאה בטעינה';
-      setError(`${msg} (token: ${t ? t.slice(0, 10) + '...' : 'none'})`);
+      if (!cached) setError(`${msg} (token: ${t ? t.slice(0, 10) + '...' : 'none'})`);
     } finally {
       setLoading(false);
     }
