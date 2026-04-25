@@ -102,6 +102,12 @@ export default function OrdersPage() {
         <h1 className="text-lg font-bold text-gray-800">הזמנות מהירות</h1>
         <div className="flex items-center gap-3">
           <Link
+            href="/needs"
+            className="text-sm text-gray-500 hover:text-gray-800 border border-gray-200 px-3 py-2 rounded-lg transition"
+          >
+            חוסרים
+          </Link>
+          <Link
             href="/new"
             className="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           >
