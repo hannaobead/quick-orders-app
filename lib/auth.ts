@@ -1,10 +1,22 @@
 import { getBrowserClient } from './supabase';
 
 export async function signIn(email: string, password: string) {
+  // Use server-side proxy to avoid Supabase CORS restrictions on this subdomain
+  const res = await fetch('/api/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error || 'Invalid login credentials');
+
+  // Inject the session into the browser Supabase client so getSession() works
   const supabase = getBrowserClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw new Error(error.message);
-  return data.session;
+  await supabase.auth.setSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+  });
+  return data;
 }
 
 export async function signOut() {
