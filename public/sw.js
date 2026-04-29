@@ -35,8 +35,13 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // Only handle same-origin requests — never touch external domains (Supabase, etc.)
+  if (url.origin !== self.location.origin) return;
+
   // API calls — always network, never cache
-  if (event.request.url.includes('/api/')) return;
+  if (url.pathname.startsWith('/api/')) return;
 
   event.respondWith(
     fetch(event.request)
